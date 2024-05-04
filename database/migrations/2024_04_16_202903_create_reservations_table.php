@@ -35,7 +35,7 @@ return new class extends Migration
             $table->UnsignedBigInteger('bill_id')->nullable();
             $table->foreign('bill_id')->references('id')->on('bills')->onDelete('cascade');
             $table->UnsignedBigInteger('offer_id');
-            $table->foreign('offer_id')->references('id')->on('offers');
+            $table->foreign('offer_id')->references('id')->on('offers')->onDelete('cascade');
         });
     }
 

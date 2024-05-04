@@ -12,6 +12,7 @@ use App\Http\Controllers\CityController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\CbrandController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CmodelController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\RoomtypeController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\TourController;
+use App\Models\Offer;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -56,35 +58,6 @@ Route::get('/restaurants/{id}', [RestaurantController::class,"show"]);
 
 
 Route::post("/host/registerH",[\App\Http\Controllers\AuthHostController::class,"store"]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -144,3 +117,19 @@ Route::post("/register",[\App\Http\Controllers\AuthController::class,"register"]
 Route::post("/login",[\App\Http\Controllers\AuthController::class,"login"]);
 Route::post('/logout', [AuthController::class, "logout"]);
 
+
+
+
+/*------------ADMIN ROUTES-------------*/
+
+Route::get('/offers',[OfferController::class,'AllOffers']);
+Route::delete('delete_offers',[OfferController::class,'deleteOffers']);
+
+Route::get('/reservations', [ReservationController::class, 'index']);
+Route::get('/clients/{id}',[ClientController::class,'show']);
+
+Route::get('users', [UserController::class, 'index']);
+Route::put('/users/{id}', [UserController::class, 'updateStatus']);
+Route::delete('/users', [UserController::class, 'deleteUsers']);
+Route::post('/users', [UserController::class, 'storeAdmin']);
+Route::put('/admin',[UserController::class,"updateAdmin"]);

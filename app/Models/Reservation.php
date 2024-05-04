@@ -38,9 +38,9 @@ class Reservation extends Model
         return $this->belongsTo(Tour::class);
     }
 
-    // public function offer(){
-    //     return $this->belongsTo(Offer::class);
-    // }
+    public function offer(){
+        return $this->belongsTo(Offer::class);
+    }
 
     public function bill(){
         return $this->belongsTo(Bill::class);

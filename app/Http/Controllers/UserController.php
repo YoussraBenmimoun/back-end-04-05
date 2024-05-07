@@ -54,16 +54,16 @@ class UserController extends Controller
     }
     public function updateAdmin(Request $request)
     {
-        // $id = Auth::user()->id;
-        $admin = User::find(3);
-        $admin->email = $request->data->email;
+        $id = Auth::user()->id;
+        $admin = User::find($id);
+        $admin->email = $request->email;
         $admin->password = Hash::make($request->password);
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $fileName = $file->getClientOriginalName();
             $file->move(public_path('assets'), $fileName);
             $image = 'assets/' . $fileName;
-            $admin->image = $image;
+            $admin->file = $image;
         }
         $admin->save();
         return response()->json(['data' => $request->all(), 'admin' => $admin]);

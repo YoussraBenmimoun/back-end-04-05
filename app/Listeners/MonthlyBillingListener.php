@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Models\Bill;
+use App\Models\Host;
 use App\Models\User;
 use App\Models\Offer;
 use App\Models\Reservation;
@@ -11,6 +12,7 @@ use App\Events\MonthlyBillingEvent;
 use App\Notifications\BillNotification;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Notification;
 
 class MonthlyBillingListener implements ShouldQueue
 {
@@ -20,8 +22,8 @@ class MonthlyBillingListener implements ShouldQueue
     {
         $reservations_by_host = Reservation::join('offers', 'reservations.offer_id', '=', 'offers.id')
             ->select('offers.host_id', DB::raw('count(*) as reservation_count'))
-            ->whereMonth('reservations.start_date', now()->month-1)
-            ->whereYear('reservations.start_date', now()->year)
+            ->whereMonth('reservations.start_date', now()->month)
+            ->whereYear('reservations.start_date', now()->subMonth()->year)
             ->groupBy('offers.host_id')
             ->get();
 
@@ -39,9 +41,11 @@ class MonthlyBillingListener implements ShouldQueue
             $offerIds = Offer::where('host_id', $host_id)->pluck('id');
             Reservation::whereIn('offer_id', $offerIds)->update(['billed' => true]);
 
-            $host = User::find($host_id); 
-            $host->notify(new BillNotification($bill));
+            $host = Host::find($host_id); 
+            $user = $host->user;
+            Notification::send($user,new BillNotification($bill));
+            // $host->notify(new BillNotification($bill));
         }
-        info("Reservation of " + now()->month-1 + "/" + now()->year + " billed");
+        info("Reservation of " . now()->subMonth()->format('m/Y') . " billed");
     }
 }

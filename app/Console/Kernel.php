@@ -24,7 +24,8 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function () {
             event(new MonthlyBillingEvent());
-        })->monthlyOn(1, '00:00')->shouldAppendOutput('schedular.log');
+        }) ->everyMinute();
+        //->monthlyOn(1, '00:00')->shouldAppendOutput('schedular.log');
     }
 
 

@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
-    /*----------Admin----------*/
     public function show($id){
 
         $client = Client::find($id);

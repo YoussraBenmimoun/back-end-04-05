@@ -51,6 +51,7 @@ class BillNotification extends Notification
     {
         return [
             'amount' => $this->bill->total,
+            'bill_id' => $this->bill->id,
         ];
     }
 }

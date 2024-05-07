@@ -14,39 +14,76 @@ use Illuminate\Http\Response;
 
 class ReservationController extends Controller
 {
+    // public function storeCarReservation(Request $request)
+    // {
+    //     $id = $request->id;
+    //     $pickuptime = Carbon::parse($request->pickuptime);
+    //     $dropofftime = Carbon::parse($request->dropofftime);
+
+    //     // Check if there are any overlapping reservations
+    //     $overlappingReservations = Reservation::where('car_id', $id)
+    //         ->where(function ($query) use ($pickuptime, $dropofftime) {
+    //             $query->where(function ($q) use ($pickuptime, $dropofftime) {
+    //                 $q->whereBetween('start_date', [$pickuptime, $dropofftime])
+    //                     ->orWhereBetween('end_date', [$pickuptime, $dropofftime]);
+    //             })->orWhere(function ($q) use ($pickuptime, $dropofftime) {
+    //                 $q->where('start_date', '<=', $pickuptime)
+    //                     ->where('end_date', '>=', $dropofftime);
+    //             });
+    //         })
+    //         ->exists();
+
+    //     if ($overlappingReservations) {
+    //         return response()->json(['message' => 'La voiture est déjà réservée pour ces dates'], Response::HTTP_CONFLICT);
+    //     }
+
+    //     // Check if there are any reservations that don't allow service after the finish date
+    //     $futureReservations = Reservation::where('car_id', $id)
+    //         ->where('end_date', '>', $dropofftime)
+    //         ->exists();
+
+    //     if ($futureReservations) {
+    //         return response()->json(['message' => 'La voiture n\'est pas disponible  la fin actuelle de la réservation actuelle'], Response::HTTP_CONFLICT);
+    //     }
+
+    //     // If no conflicts, proceed with storing the reservation
+    //     $reservationId = Reservation::insertGetId([
+    //         'start_date' => $pickuptime,
+    //         'end_date' => $dropofftime,
+    //         'car_id' => $id,
+    //         'client_id' => 1, //auth()->id()
+    //         'offer_id' => $request->offer_id,
+    //         'created_at' => now(),
+    //         'updated_at' => now(),
+    //     ]);
+
+    //     $reservation = Reservation::find($reservationId);
+
+    //     return response()->json(['message' => 'Réservation ajoutée', 'reservation' => $reservation]);
+    // }
+
     public function storeCarReservation(Request $request)
     {
         $id = $request->id;
+        $location = $request->location;
         $pickuptime = Carbon::parse($request->pickuptime);
         $dropofftime = Carbon::parse($request->dropofftime);
 
-        // Check if there are any overlapping reservations
-        $overlappingReservations = Reservation::where('car_id', $id)
+        $car_exists = Reservation::where('car_id', $id)
             ->where(function ($query) use ($pickuptime, $dropofftime) {
-                $query->where(function ($q) use ($pickuptime, $dropofftime) {
-                    $q->whereBetween('start_date', [$pickuptime, $dropofftime])
-                        ->orWhereBetween('end_date', [$pickuptime, $dropofftime]);
-                })->orWhere(function ($q) use ($pickuptime, $dropofftime) {
+                $query->where(function ($q) use ($pickuptime) {
                     $q->where('start_date', '<=', $pickuptime)
+                        ->where('end_date', '>=', $pickuptime);
+                })->orWhere(function ($q) use ($dropofftime) {
+                    $q->where('start_date', '<=', $dropofftime)
                         ->where('end_date', '>=', $dropofftime);
                 });
             })
             ->exists();
-
-        if ($overlappingReservations) {
-            return response()->json(['message' => 'La voiture est déjà réservée pour ces dates'], Response::HTTP_CONFLICT);
+        if ($car_exists) {
+            return response()->json(['message' => 'La voiture est déjà réservée'], Response::HTTP_CONFLICT);
         }
 
-        // Check if there are any reservations that don't allow service after the finish date
-        $futureReservations = Reservation::where('car_id', $id)
-            ->where('end_date', '>', $dropofftime)
-            ->exists();
-
-        if ($futureReservations) {
-            return response()->json(['message' => 'La voiture n\'est pas disponible  la fin actuelle de la réservation actuelle'], Response::HTTP_CONFLICT);
-        }
-
-        // If no conflicts, proceed with storing the reservation
         $reservationId = Reservation::insertGetId([
             'start_date' => $pickuptime,
             'end_date' => $dropofftime,

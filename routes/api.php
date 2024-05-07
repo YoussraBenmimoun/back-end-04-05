@@ -14,6 +14,7 @@ use App\Http\Controllers\HotelController;
 use App\Http\Controllers\CbrandController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CmodelController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\RoomtypeController;
 use App\Http\Controllers\RestaurantController;
@@ -133,3 +134,9 @@ Route::put('/users/{id}', [UserController::class, 'updateStatus']);
 Route::delete('/users', [UserController::class, 'deleteUsers']);
 Route::post('/users', [UserController::class, 'storeAdmin']);
 Route::put('/admin',[UserController::class,"updateAdmin"]);
+
+/*-----------------Notification & Bill Routes ----------- */
+
+Route::get("/bills/{id}",[BillController::class,"show"]);
+Route::get('/notifications',[NotificationController::class,"index"]);
+Route::put('/mark_notification_as_read/{id}',[NotificationController::class,"mark_notification_as_read"]);
